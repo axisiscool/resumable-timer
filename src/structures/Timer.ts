@@ -1,4 +1,3 @@
-import type Redis from 'ioredis';
 import {
 	TimerStatus,
 	type TimerStartOptions,
@@ -6,27 +5,22 @@ import {
 	type TimerPauseAndResumeReturnValue,
 	type TimerStopReturnValue
 } from '../types/TimerOptions';
+import { redis } from '../utils/redis';
 
 export class Timer {
-	private readonly redis: Redis;
-
-	public constructor(redis: Redis) {
-		if (!redis) {
-			throw new Error('Redis client not provided.');
-		}
-
-		this.redis = redis;
-	}
-
 	/**
 	 * Starts a new timer.
 	 * @since 1.0.0
 	 */
-	public async start(options: TimerStartOptions): Promise<TimerStartReturnValue> {
+	public static async start(options: TimerStartOptions): Promise<TimerStartReturnValue> {
+		if (!redis) {
+			throw new Error('Please call setup function before starting a timer.');
+		}
+
 		const { id, expiresAt } = options;
 
 		const now = Date.now();
-		await this.redis.set(`timer:${id}`, now);
+		await redis.set(`timer:${id}`, now);
 
 		const timerExpiry = Number(expiresAt) - Number(new Date(now));
 
@@ -37,9 +31,13 @@ export class Timer {
 	 * Pauses a currently running timer.
 	 * @since 1.0.0
 	 */
-	public async pause(id: string): Promise<TimerPauseAndResumeReturnValue> {
+	public static async pause(id: string): Promise<TimerPauseAndResumeReturnValue> {
+		if (!redis) {
+			throw new Error('Please call setup function before starting a timer.');
+		}
+
 		const now = Date.now();
-		const startTime = await this.redis.get(`timer:${id}`);
+		const startTime = await redis.get(`timer:${id}`);
 
 		if (!startTime) {
 			throw new Error('Invalid timer ID provided.');
@@ -54,12 +52,16 @@ export class Timer {
 	 * Resumes a currently running timer.
 	 * @since 1.0.0
 	 */
-	public async resume(id: string, remaining: number): Promise<TimerPauseAndResumeReturnValue> {
+	public static async resume(id: string, remaining: number): Promise<TimerPauseAndResumeReturnValue> {
+		if (!redis) {
+			throw new Error('Please call setup function before starting a timer.');
+		}
+
 		const now = Date.now();
-		const startTime = await this.redis.get(`timer:${id}`);
+		const startTime = await redis.get(`timer:${id}`);
 
 		const remainingTime = Math.abs(Number(startTime) - now + remaining);
-		await this.redis.set(`timer:${id}`, now);
+		await redis.set(`timer:${id}`, now);
 
 		return { id, status: TimerStatus.RUNNING, remainingTime };
 	}
@@ -68,14 +70,18 @@ export class Timer {
 	 * Stops a currently running timer, and deletes it from Redis.
 	 * @since 1.0.0
 	 */
-	public async stop(id: string): Promise<TimerStopReturnValue> {
-		const startTime = await this.redis.get(`timer:${id}`);
+	public static async stop(id: string): Promise<TimerStopReturnValue> {
+		if (!redis) {
+			throw new Error('Please call setup function before starting a timer.');
+		}
+
+		const startTime = await redis.get(`timer:${id}`);
 
 		if (!startTime) {
 			throw new Error('Invalid timer ID provided.');
 		}
 
-		await this.redis.del(`timer:${id}`);
+		await redis.del(`timer:${id}`);
 
 		return { id, status: TimerStatus.STOPPED };
 	}
