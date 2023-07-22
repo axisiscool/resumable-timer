@@ -1,6 +1,6 @@
 {
 	"name": "resumable-timer",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "A resumable timer backed by Redis & Postgres.",
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
@@ -11,12 +11,14 @@
 		"require": "./dist/index.js"
 	},
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "tsup"
+		"build": "tsup",
+		"changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml --include-path './*'",
+		"release": "cliff-jumper"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^17.6.7",
 		"@commitlint/config-angular": "^17.6.7",
+		"@favware/cliff-jumper": "^2.1.1",
 		"@types/node": "^20.4.3",
 		"husky": "^8.0.3",
 		"prettier": "^3.0.0",
