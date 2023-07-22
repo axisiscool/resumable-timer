@@ -1,6 +1,6 @@
 {
 	"name": "resumable-timer",
-	"version": "0.0.2",
+	"version": "1.0.0",
 	"description": "A resumable timer backed by Redis & Postgres.",
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
