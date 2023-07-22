@@ -1,0 +1,51 @@
+{
+	"name": "resumable-timer",
+	"version": "0.0.1",
+	"description": "A resumable timer backed by Redis & Postgres.",
+	"main": "dist/index.js",
+	"module": "dist/index.mjs",
+	"types": "dist/index.d.ts",
+	"exports": {
+		"types": "./dist/index.d.ts",
+		"import": "./dist/index.mjs",
+		"require": "./dist/index.js"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "tsup"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^17.6.7",
+		"@commitlint/config-angular": "^17.6.7",
+		"@types/node": "^20.4.3",
+		"husky": "^8.0.3",
+		"prettier": "^3.0.0",
+		"tsup": "^7.1.0",
+		"typescript": "^5.1.6"
+	},
+	"peerDependencies": {
+		"ioredis": "~5.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/axisiscool/resumable-timer.git"
+	},
+	"keywords": [
+		"timer",
+		"pausable timer",
+		"resumable timer",
+		"redis timer"
+	],
+	"files": [
+		"dist"
+	],
+	"prettier": {
+		"useTabs": true,
+		"tabWidth": 4,
+		"printWidth": 120,
+		"trailingComma": "none",
+		"singleQuote": true
+	},
+	"author": "Jonathan Zero <axis@axis.moe>",
+	"license": "GPL-3.0"
+}
