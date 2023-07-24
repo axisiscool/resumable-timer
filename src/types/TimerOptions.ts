@@ -30,13 +30,13 @@ export type TimerStartReturnValue = {
 	expiresAt: number;
 };
 
-export type TimerPauseAndResumeReturnValue = {
+export type TimerResumeReturnValue = {
 	id: string;
 	status: TimerStatus;
 	remainingTime: number;
 };
 
-export type TimerStopReturnValue = {
+export type TimerPauseAndStopReturnValue = {
 	id: string;
 	status: TimerStatus;
 };

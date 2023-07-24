@@ -2,8 +2,8 @@ import {
 	TimerStatus,
 	type TimerStartOptions,
 	type TimerStartReturnValue,
-	type TimerPauseAndResumeReturnValue,
-	type TimerStopReturnValue
+	type TimerPauseAndStopReturnValue,
+	type TimerResumeReturnValue
 } from '../types/TimerOptions';
 import { redis } from '../utils/redis';
 
@@ -31,28 +31,25 @@ export class Timer {
 	 * Pauses a currently running timer.
 	 * @since 1.0.0
 	 */
-	public static async pause(id: string): Promise<TimerPauseAndResumeReturnValue> {
+	public static async pause(id: string): Promise<TimerPauseAndStopReturnValue> {
 		if (!redis) {
 			throw new Error('Please call setup function before starting a timer.');
 		}
 
-		const now = Date.now();
 		const startTime = await redis.get(`timer:${id}`);
 
 		if (!startTime) {
 			throw new Error('Invalid timer ID provided.');
 		}
 
-		const remainingTime = now - Number(startTime);
-
-		return { id, status: TimerStatus.PAUSED, remainingTime };
+		return { id, status: TimerStatus.PAUSED };
 	}
 
 	/**
 	 * Resumes a currently running timer.
 	 * @since 1.0.0
 	 */
-	public static async resume(id: string, remaining: number): Promise<TimerPauseAndResumeReturnValue> {
+	public static async resume(id: string, expiresAt: number): Promise<TimerResumeReturnValue> {
 		if (!redis) {
 			throw new Error('Please call setup function before starting a timer.');
 		}
@@ -60,7 +57,7 @@ export class Timer {
 		const now = Date.now();
 		const startTime = await redis.get(`timer:${id}`);
 
-		const remainingTime = Math.abs(Number(startTime) - now + remaining);
+		const remainingTime = now + expiresAt - Number(startTime);
 		await redis.set(`timer:${id}`, now);
 
 		return { id, status: TimerStatus.RUNNING, remainingTime };
@@ -70,7 +67,7 @@ export class Timer {
 	 * Stops a currently running timer, and deletes it from Redis.
 	 * @since 1.0.0
 	 */
-	public static async stop(id: string): Promise<TimerStopReturnValue> {
+	public static async stop(id: string): Promise<TimerPauseAndStopReturnValue> {
 		if (!redis) {
 			throw new Error('Please call setup function before starting a timer.');
 		}
